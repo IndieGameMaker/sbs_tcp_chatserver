@@ -37,4 +37,17 @@ public class ChatServer
         
         Console.WriteLine($"서버가 포트 {_port}에서 시작되었습니다.");
     }
+
+    public void Stop()
+    {
+        if (!_isRunning)
+        {
+            Console.WriteLine("서버가 이미 종료되었습니다.");
+            return;
+        }
+
+        _isRunning = false;
+        _listener?.Stop();
+        Console.WriteLine("서버가 중지되었습니다.");
+    }
 }
