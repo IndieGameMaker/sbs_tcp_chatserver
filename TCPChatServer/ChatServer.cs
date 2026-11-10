@@ -59,10 +59,17 @@ public class ChatServer
                 var client = await _listener!.AcceptTcpClientAsync();
                 
                 // 접속한 클라이언트 저장
+                var connectedClinet = new ConnectedClient(client);
+                // 클라이언트 아이디 생성
+                var clientId = connectedClinet.ClientId;
+                // 클라이언트 목록 추가
+                // _clients.TryAdd(clientId, connectedClinet);
+                // 인덱서 방식
+                _clients[clientId] = connectedClinet;
                 
                 // 연결된 클라이언트 정보 출력 (EndPoint = IPAddress + Port)
                 var endPoint = client.Client.RemoteEndPoint;
-                Console.WriteLine($"[연결] 클라이언트가 연결되었습니다.: {endPoint}");
+                Console.WriteLine($"[정보] 현재 연결된 클라이언트 수: {_clients.Count}");
             }
             catch (Exception e)
             {
