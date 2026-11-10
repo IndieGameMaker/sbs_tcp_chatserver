@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Net;
 using System.Net.Sockets;
 
@@ -13,13 +14,18 @@ public class ChatServer
     
     // 서버 포트
     private readonly int _port;
+
+    // Thread-Safe 한 컬랙션을 사용
+    private readonly ConcurrentDictionary<string, ConnectedClient> _clients;
     
     // 생성자
     public ChatServer(int port)
     {
         _port = port;
         _isRunning = false;
+        _clients = new ConcurrentDictionary<string, ConnectedClient>();
     }
+
 
     // 서버 시작 메서드
     public void Start()
@@ -51,6 +57,8 @@ public class ChatServer
             {
                 // 클라이언트 연결 수락
                 var client = await _listener!.AcceptTcpClientAsync();
+                
+                // 접속한 클라이언트 저장
                 
                 // 연결된 클라이언트 정보 출력 (EndPoint = IPAddress + Port)
                 var endPoint = client.Client.RemoteEndPoint;
