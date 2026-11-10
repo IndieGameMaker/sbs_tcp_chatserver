@@ -68,8 +68,11 @@ public class ChatServer
                 _clients[clientId] = connectedClinet;
                 
                 // 연결된 클라이언트 정보 출력 (EndPoint = IPAddress + Port)
-                var endPoint = client.Client.RemoteEndPoint;
+                // var endPoint = client.Client.RemoteEndPoint;
                 Console.WriteLine($"[정보] 현재 연결된 클라이언트 수: {_clients.Count}");
+                
+                // 클라이언트로 부터 메시지 수신 시작 (비동기)
+                _ = Task.Run(() => connectedClinet.ReceiveMessageAsync());
             }
             catch (Exception e)
             {
