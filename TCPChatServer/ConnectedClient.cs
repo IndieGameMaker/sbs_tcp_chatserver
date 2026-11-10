@@ -42,7 +42,34 @@ public class ConnectedClient : IDisposable
     // 비동기 메시지 수신 처리
     public async Task ReceiveMessageAsync()
     {
-        
+        try
+        {
+            while (IsConnected)
+            {
+                // 한줄씩 읽기
+                string? message = await _reader.ReadLineAsync();
+                
+                // 연결이 끊어지면 null 반환
+                if (message == null)
+                {
+                    Console.WriteLine($"[연결 종료] {_clientId}");
+                    break;
+                }
+                
+                Console.WriteLine($"[수신] {_clientId} : {message}");
+            }
+        }
+        catch (Exception e)
+        {
+            if (!_isDisposed)
+            {
+                Console.WriteLine(e);
+            }
+        }
+        finally
+        {
+            Dispose();
+        }
     }
     
     
