@@ -67,6 +67,9 @@ public class ChatServer
                 // 인덱서 방식
                 _clients[clientId] = connectedClinet;
                 
+                // 이벤트 구독
+                connectedClinet.OnMessageReceived += onMessageReceived;
+                
                 // 연결된 클라이언트 정보 출력 (EndPoint = IPAddress + Port)
                 // var endPoint = client.Client.RemoteEndPoint;
                 Console.WriteLine($"[정보] 현재 연결된 클라이언트 수: {_clients.Count}");
@@ -81,6 +84,13 @@ public class ChatServer
         }
     }
 
+    private void onMessageReceived(ConnectedClient sender, string message)
+    {
+        // 메시지 포맷 : [발신자ID]: 메시지
+        string msg = $"[{sender.ClientId}] {message}";
+        Console.WriteLine($"[브로드캐스팅] {msg}");
+    }
+    
     public void Stop()
     {
         if (!_isRunning)
