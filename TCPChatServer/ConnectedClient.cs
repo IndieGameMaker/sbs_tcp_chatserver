@@ -23,6 +23,9 @@ public class ConnectedClient : IDisposable
     // 클라이언트 연결 여부 프로퍼티
     public bool IsConnected => !_isDisposed && _client.Connected;
     
+    // 메시지 수신 이벤트
+    public event Action<ConnectedClient, string> OnMessageReceived;
+    
     // 생성자
     public ConnectedClient(TcpClient client)
     {
@@ -57,6 +60,7 @@ public class ConnectedClient : IDisposable
                 }
                 
                 Console.WriteLine($"[수신] {_clientId} : {message}");
+                OnMessageReceived?.Invoke(this, message);
             }
         }
         catch (Exception e)
