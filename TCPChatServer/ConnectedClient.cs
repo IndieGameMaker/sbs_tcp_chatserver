@@ -34,7 +34,7 @@ public class ConnectedClient : IDisposable
         
         // 스트림 초기화 (UTF-8 인코딩)
         _reader = new StreamReader(_stream, System.Text.Encoding.UTF8);
-        _writer = new StreamWriter(_stream, System.Text.Encoding.UTF8) { AutoFlush = true };
+        _writer = new StreamWriter(_stream, new System.Text.UTF8Encoding(false)) { AutoFlush = true };
         
         _clientId = _client.Client.RemoteEndPoint?.ToString() ?? Guid.NewGuid().ToString();
         _isDisposed = false;
@@ -75,6 +75,24 @@ public class ConnectedClient : IDisposable
             Dispose();
         }
     }
+
+    public async Task SendMessageAsync(string message)
+    {
+        if (!IsConnected)
+        {
+            Console.WriteLine("[전송 실패] 클라이언트 전송 불가!");
+            return;
+        }
+
+        try
+        {
+            await _writer.WriteLineAsync(message); // WriteAsync => ReadLineAsync() => \n
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"[전송 오류] 메시지 전송 실패: {e.Message}");
+        }
+    }
     
     
     public void Dispose()
@@ -82,6 +100,8 @@ public class ConnectedClient : IDisposable
         if (_isDisposed) return;
         _isDisposed = true;
         
+        _reader.Dispose();
+        _writer.Dispose();
         _stream.Dispose();
         _client.Dispose();
     }

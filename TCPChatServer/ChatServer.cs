@@ -83,13 +83,6 @@ public class ChatServer
             }
         }
     }
-
-    private void onMessageReceived(ConnectedClient sender, string message)
-    {
-        // 메시지 포맷 : [발신자ID]: 메시지
-        string msg = $"[{sender.ClientId}] {message}";
-        Console.WriteLine($"[브로드캐스팅] {msg}");
-    }
     
     public void Stop()
     {
@@ -103,4 +96,30 @@ public class ChatServer
         _listener?.Stop();
         Console.WriteLine("서버가 중지되었습니다.");
     }
+    
+    private void onMessageReceived(ConnectedClient sender, string message)
+    {
+        // 메시지 포맷 : [발신자ID]: 메시지
+        string msg = $"[{sender.ClientId}] {message}";
+        Console.WriteLine($"[브로드캐스팅] {msg}");
+        
+        _ = Task.Run(() => BroadcastMessageAsync(message));
+    }
+    
+    // 같은 채팅방에 접속한 모든 클라이언트에게 메시지를 전달(Broadcasting)
+    private async Task BroadcastMessageAsync(string message)
+    {
+        foreach (var client in _clients)
+        {
+            if (client.Value.IsConnected)
+            {
+                await client.Value.SendMessageAsync(message);
+            }
+        }
+    }
 }
+
+/* BOM (Byte Order Mark)
+ *
+ * 
+ */
