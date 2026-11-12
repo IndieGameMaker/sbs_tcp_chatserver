@@ -34,7 +34,7 @@ class Program
                 }
                 
                 // 서버에 메시지 전송
-                //await client.
+                await client.SendMessageAsync(input);
             }
         }
         catch (Exception e)
