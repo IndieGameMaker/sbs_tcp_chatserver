@@ -69,6 +69,7 @@ public class ChatServer
                 
                 // 이벤트 구독
                 connectedClinet.OnMessageReceived += onMessageReceived;
+                connectedClinet.Disconnect += OnClientDisconnected;
                 
                 // 연결된 클라이언트 정보 출력 (EndPoint = IPAddress + Port)
                 // var endPoint = client.Client.RemoteEndPoint;
@@ -104,6 +105,18 @@ public class ChatServer
         Console.WriteLine($"[브로드캐스팅] {msg}");
         
         _ = Task.Run(() => BroadcastMessageAsync(message));
+    }
+
+    private void OnClientDisconnected(string clientId)
+    {
+        if (_clients.TryRemove(clientId, out var client))
+        {
+            client.OnMessageReceived -= onMessageReceived;
+            client.Disconnect -= OnClientDisconnected;
+            
+            Console.WriteLine($"[연결 종료] 클라이언트 {client.ClientId}가 연결 종료되었습니다.");
+            Console.WriteLine($"[정보] 현재 연결된 클라이언트 수: {_clients.Count}");
+        }
     }
     
     // 같은 채팅방에 접속한 모든 클라이언트에게 메시지를 전달(Broadcasting)

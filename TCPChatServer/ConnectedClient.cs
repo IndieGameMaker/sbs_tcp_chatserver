@@ -26,6 +26,9 @@ public class ConnectedClient : IDisposable
     // 메시지 수신 이벤트
     public event Action<ConnectedClient, string> OnMessageReceived;
     
+    // 연결 종료 이벤트
+    public event Action<string> Disconnect;
+    
     // 생성자
     public ConnectedClient(TcpClient client)
     {
@@ -99,6 +102,8 @@ public class ConnectedClient : IDisposable
     {
         if (_isDisposed) return;
         _isDisposed = true;
+
+        Disconnect?.Invoke(_clientId);
         
         _reader.Dispose();
         _writer.Dispose();
